@@ -65,7 +65,6 @@ export default function Home() {
           <h1 className="display-4 fw-bold">Help find stolen Bikes</h1>
           <p className="lead mb-0">
             Join our community to track and recover stolen bikes -
-            exmpalekfekfkenkfnerwknf
           </p>
         </div>
         <div
