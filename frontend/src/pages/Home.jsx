@@ -64,7 +64,8 @@ export default function Home() {
         <div className="container py-5">
           <h1 className="display-4 fw-bold">Help find stolen Bikes</h1>
           <p className="lead mb-0">
-            Join our community to track and recover stolen bikes
+            Join our community to track and recover stolen bikes -
+            exmpalekfekfkenkfnerwknf
           </p>
         </div>
         <div
