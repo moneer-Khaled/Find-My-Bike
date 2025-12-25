@@ -3,31 +3,34 @@ from django.contrib.auth.models import User
 
 
 class Bike(models.Model):
-    owner = models.ForeignKey( User, on_delete=models.CASCADE, related_name="bikes")
+    STATUS_CHOICES = [ ('stolen', 'Stolen'),  ('found', 'Found'),]
 
     brand = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
+    serial_number = models.CharField(max_length=100, unique=True)
     color = models.CharField(max_length=50)
-
-    description = models.TextField( help_text="Scratches, stickers, basket, seat color, etc." )
-
-    is_stolen = models.BooleanField(default=False)
-
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
+    image = models.ImageField(upload_to='bikes/', blank=True, null=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
+
     def __str__(self):
-        return f"{self.brand} {self.model} ({self.color})"
+        return f"{self.brand} - {self.model}"
 
 
 class Sighting(models.Model):
-    bike = models.ForeignKey( Bike,on_delete=models.CASCADE,related_name="sightings")
+    bike = models.ForeignKey( Bike,on_delete=models.CASCADE, related_name='sightings' )
+    city = models.CharField(max_length=100)
+    address = models.CharField(max_length=200)
+    date = models.DateField()
+    description = models.TextField(blank=True)
+    reported_by = models.ForeignKey(    User,on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    location = models.CharField(max_length=200)
-    description = models.TextField(help_text="What did you see? Who was riding it?")
 
-    photo = models.ImageField(upload_to="sightings/", blank=True, null=True)
-
-    reported_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Sighting of {self.bike} at {self.location}"
+        return f"{self.bike} seen in {self.city}"
+
