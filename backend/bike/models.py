@@ -31,5 +31,5 @@ class Sighting(models.Model):
 
 
     def __str__(self):
-        return f"{self.bike} seen in {self.city}"
+        return f"{self.bike} seen in {self.location}"
 
