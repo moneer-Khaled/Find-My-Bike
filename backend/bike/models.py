@@ -22,8 +22,7 @@ class Bike(models.Model):
 
 class Sighting(models.Model):
     bike = models.ForeignKey( Bike,on_delete=models.CASCADE, related_name='sightings' )
-    city = models.CharField(max_length=100)
-    address = models.CharField(max_length=200)
+    location = models.CharField(max_length=255)
     date = models.DateField()
     description = models.TextField(blank=True)
     reported_by = models.ForeignKey(    User,on_delete=models.SET_NULL, null=True, blank=True)
