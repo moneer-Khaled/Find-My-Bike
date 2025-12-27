@@ -1,37 +1,56 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
     <footer className="bg-dark text-white pt-5 pb-4 mt-5">
       <div className="container">
         <div className="row">
-          {/* Column 1: Brand/About */}
+          {/* About */}
           <div className="col-md-3 mb-3">
-            <h5 className="fw-bold">FindMyBike</h5>
-            <p className="small text-white-50">
+            <h5 className="fw-bold d-flex align-items-center">
+              <img
+                src="/bike.svg"
+                alt="Logo"
+                style={{
+                  height: '24px',
+                  marginRight: '10px',
+                }}
+              />
+              FindMyBike
+            </h5>
+            <p className="small text-white-50 mt-3">
               Helping the Dutch community recover stolen bicycles through
               crowd-sourced reporting and tracking.
             </p>
           </div>
 
-          {/* Column 2: Quick Links */}
+          {/* Quick Links */}
           <div className="col-md-3 mb-3">
-            <h5 className="fw-bold mb-3">Quick Links</h5>
+            <h5 className="fw-bold mb-3" style={{ color: '#667eea' }}>
+              Quick Links
+            </h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="#" className="text-decoration-none text-white-50">
+                <Link to="/" className="text-decoration-none text-white-50">
                   Home
-                </a>
+                </Link>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-decoration-none text-white-50">
+                <Link
+                  to="/report"
+                  className="text-decoration-none text-white-50"
+                >
                   Report Stolen Bike
-                </a>
+                </Link>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-decoration-none text-white-50">
+                <Link
+                  to="/contact"
+                  className="text-decoration-none text-white-50"
+                >
                   Contact
-                </a>
+                </Link>
               </li>
               <li className="mb-2">
                 <a href="#" className="text-decoration-none text-white-50">
@@ -41,9 +60,11 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 3: Resources */}
+          {/* Resources */}
           <div className="col-md-3 mb-3">
-            <h5 className="fw-bold mb-3">Resources</h5>
+            <h5 className="fw-bold mb-3" style={{ color: '#667eea' }}>
+              Resources
+            </h5>
             <ul className="list-unstyled">
               <li className="mb-2">
                 <a href="#" className="text-decoration-none text-white-50">
@@ -63,15 +84,22 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 4: Contact */}
+          {/* Contact */}
           <div className="col-md-3 mb-3">
-            <h5 className="fw-bold mb-3">Contact</h5>
-            <p className="small text-white-50 mb-1">
-              <i className="bi bi-envelope me-2"></i>support@findmybike.com
+            <h5 className="fw-bold mb-3" style={{ color: '#667eea' }}>
+              Contact
+            </h5>
+            <p className="small text-white-50 mb-3">
+              <i className="bi bi-geo-alt me-2"></i>Amsterdam, Central, AB 12345
             </p>
             <p className="small text-white-50 mb-3">
-              <i className="bi bi-telephone me-2"></i>+31 (0) 20 123 4567
+              <i className="bi bi-telephone me-2"></i>+31 (0) 20 123-4567
             </p>
+
+            <p className="small text-white-50 mb-3">
+              <i className="bi bi-envelope me-2"></i>info@findmybike.com
+            </p>
+
             <div className="d-flex gap-3 mt-3">
               <a
                 href="https://x.com/"

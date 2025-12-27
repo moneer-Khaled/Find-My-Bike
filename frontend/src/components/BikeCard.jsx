@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function BikeCard({ data }) {
   return (
@@ -41,7 +42,12 @@ export default function BikeCard({ data }) {
           <strong>Color:</strong> {data.color}
         </p>
         <div className="d-flex justify-content-center mt-auto">
-          <button className="btn btn-primary btn-sm w-50">View Details</button>
+          <Link
+            to={`/bikes/${data.id}`}
+            className="btn btn-primary btn-sm w-50"
+          >
+            View Details
+          </Link>{' '}
         </div>
       </div>
     </div>

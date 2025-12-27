@@ -1,52 +1,56 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3.">
         <div className="container">
-          <a
-            href="/"
+          <Link
+            to="/"
             className="navbar-brand fw-bold d-flex align-items-center"
           >
             <img
-              src="./bike.svg"
+              src="/bike.svg"
               alt="FindMyBike Logo"
               style={{ height: '40px', marginRight: '10px' }}
             />
             FindMyBike
-          </a>
+          </Link>
           <div className="ms-auto d-flex align-items-center gap-4">
-            <a
-              href="#"
+            <Link
+              to="/"
               className="text-decoration-none text-secondary fw-medium"
             >
               Home
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/contact"
               className="text-decoration-none text-secondary fw-medium"
             >
               Contact
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/report"
               className="text-decoration-none text-secondary fw-medium"
             >
               Report Missing
-            </a>
+            </Link>
             <a
               href="#"
               className="text-decoration-none text-secondary fw-medium"
             >
               Dashboard
             </a>
-            <a
-              href="#"
+            <Link
+              to="/login"
               className="text-decoration-none text-secondary fw-medium"
             >
               Login
-            </a>
+            </Link>
+            <Link to="/register" className="btn btn-secondary px-4 rounded-3">
+              Register
+            </Link>
           </div>
         </div>
       </nav>
