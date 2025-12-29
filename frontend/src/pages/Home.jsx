@@ -3,7 +3,12 @@ import { useEffect, useState } from 'react';
 import { bikes } from '../data/bikes';
 import BikeCard from '../components/BikeCard';
 import '../index.css';
-import { RAW_BRANDS, RAW_COLORS, DUTCH_CITIES, DATE_OPTIONS } from '../data/options';
+import {
+  RAW_BRANDS,
+  RAW_COLORS,
+  DUTCH_CITIES,
+  DATE_OPTIONS,
+} from '../data/options';
 
 export default function Home() {
   const [filters, setFilters] = useState({
