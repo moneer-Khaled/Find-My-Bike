@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bike',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
+    'accounts',
+    
 ]
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
