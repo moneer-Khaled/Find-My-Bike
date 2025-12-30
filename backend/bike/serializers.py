@@ -13,3 +13,12 @@ class BikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bike
         fields = "__all__"
+        
+        
+class BikeSerializer(serializers.ModelSerializer):
+    sightings = SightingSerializer(many=True, read_only=True)
+    owner_email = serializers.EmailField(source="owner.email", read_only=True)
+
+    class Meta:
+        model = Bike
+        fields = "__all__"

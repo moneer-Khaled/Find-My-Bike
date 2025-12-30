@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 const Register = () => {
   const navigate = useNavigate();
@@ -15,12 +17,34 @@ const Register = () => {
       [e.target.name]: e.target.value,
     });
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Registration data:', formData);
-    navigate('/');
+
+    try {
+      const res = await axios.post(
+        'http://127.0.0.1:8000/api/auth/register/',
+        {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      //  Save token
+      localStorage.setItem('token', res.data.access);
+
+      navigate('/');
+    } catch (err) {
+      console.error(err.response?.data);
+      alert('Registration failed');
+    }
   };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log('Registration data:', formData);
+  //   navigate('/');
+  // };
 
   return (
     <div className="container py-5">

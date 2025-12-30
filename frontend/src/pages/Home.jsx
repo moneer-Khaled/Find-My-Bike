@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import { bikes } from '../data/bikes';
 import BikeCard from '../components/BikeCard';
 import '../index.css';
