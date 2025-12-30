@@ -22,7 +22,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/bikes/:id" element={<BikeDetails />} />
 
-          {/* 🔒 protect report page if you want logged-in only */}
+          {/*  protect report page if you want logged-in only */}
           <Route
             path="/report"
             element={
@@ -36,7 +36,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* 🔒 dashboard is logged-in only */}
+          {/*  dashboard is logged-in only */}
           <Route
             path="/dashboard"
             element={
