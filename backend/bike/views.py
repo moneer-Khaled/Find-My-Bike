@@ -3,6 +3,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 
+from rest_framework import viewsets, permissions, filters
+from .serializers import BikeSerializer, CommentSerializer
+
 from .models import Bike, Sighting
 from .serializers import BikeSerializer, SightingSerializer
 
@@ -37,3 +40,22 @@ def add_sighting(request, bike_id):
         return Response({"message": "Sighting added"}, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
+class BikeViewSet(viewsets.ModelViewSet):
+    queryset = Bike.objects.all()
+    serializer_class = BikeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['model_number', 'location', 'bike_type', 'color']
+    ordering_fields = ['date_seen', 'created_at']
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+        
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Bike.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
