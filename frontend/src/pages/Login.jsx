@@ -20,18 +20,14 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        'http://127.0.0.1:8000/api/auth/login/',
-        {
-          username: formData.email, // username = email
-          password: formData.password,
-        }
-      );
+      const res = await axios.post('http://127.0.0.1:8000/api/auth/login/', {
+        username: formData.email,
+        password: formData.password,
+      });
 
       //  SAVE TOKEN
       localStorage.setItem('access', res.data.access);
       localStorage.setItem('refresh', res.data.refresh);
-
 
       navigate('/');
     } catch (err) {
@@ -39,13 +35,6 @@ const Login = () => {
       alert('Login failed');
     }
   };
-
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log('Login credentials:', formData);
-  //   navigate('/');
-  // };
 
   return (
     <div className="container py-5">
