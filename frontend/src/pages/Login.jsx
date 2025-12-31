@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,11 +16,36 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login credentials:', formData);
-    navigate('/');
+
+    try {
+      const res = await axios.post(
+        'http://127.0.0.1:8000/api/auth/login/',
+        {
+          username: formData.email, // username = email
+          password: formData.password,
+        }
+      );
+
+      //  SAVE TOKEN
+      localStorage.setItem('access', res.data.access);
+      localStorage.setItem('refresh', res.data.refresh);
+
+
+      navigate('/');
+    } catch (err) {
+      console.error(err.response?.data);
+      alert('Login failed');
+    }
   };
+
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log('Login credentials:', formData);
+  //   navigate('/');
+  // };
 
   return (
     <div className="container py-5">
