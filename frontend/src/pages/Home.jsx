@@ -136,7 +136,7 @@ export default function Home() {
           className="row justify-content-center mt-4"
           style={{ marginTop: '-2.5rem' }}
         >
-          <div className="col-md-6">
+          <div className="col-11 col-md-8 col-lg-6">
             <div className="input-group input-group-lg shadow-lg border-0">
               <input
                 type="text"

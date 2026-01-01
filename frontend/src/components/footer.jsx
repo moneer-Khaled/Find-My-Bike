@@ -9,15 +9,17 @@ const Footer = () => {
           {/* About */}
           <div className="col-md-3 mb-3">
             <h5 className="fw-bold d-flex align-items-center">
-              <img
-                src="/bike.svg"
-                alt="Logo"
-                style={{
-                  height: '24px',
-                  marginRight: '10px',
-                }}
-              />
-              FindMyBike
+              <Link to="/" className="text-reset text-decoration-none d-flex align-items-center">
+                <img
+                  src="/bike.svg"
+                  alt="Logo"
+                  style={{
+                    height: '24px',
+                    marginRight: '10px',
+                  }}
+                />
+                FindMyBike
+              </Link>
             </h5>
             <p className="small text-white-50 mt-3">
               Helping the Dutch community recover stolen bicycles through
@@ -53,9 +55,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-decoration-none text-white-50">
+                <Link to="/dashboard" className="text-decoration-none text-white-50">
                   My Dashboard
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -93,11 +95,13 @@ const Footer = () => {
               <i className="bi bi-geo-alt me-2"></i>Amsterdam, Central, AB 12345
             </p>
             <p className="small text-white-50 mb-3">
-              <i className="bi bi-telephone me-2"></i>+31 (0) 20 123-4567
+              <i className="bi bi-telephone me-2"></i>
+              <a href="tel:+310201234567" className="text-white-50 text-decoration-none">+31 (0) 20 123-4567</a>
             </p>
 
             <p className="small text-white-50 mb-3">
-              <i className="bi bi-envelope me-2"></i>info@findmybike.com
+              <i className="bi bi-envelope me-2"></i>
+              <a href="mailto:info@findmybike.com" className="text-white-50 text-decoration-none">info@findmybike.com</a>
             </p>
 
             <div className="d-flex gap-3 mt-3">
@@ -131,7 +135,7 @@ const Footer = () => {
 
         <hr className="border-secondary" />
         <p className="text-center small text-white-50 mb-0">
-          &copy; 2025 FindMyBike. All rights reserved.
+          &copy; 2026 FindMyBike. All rights reserved.
         </p>
       </div>
     </footer>

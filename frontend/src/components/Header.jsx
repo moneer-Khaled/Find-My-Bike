@@ -1,14 +1,37 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { isAuthenticated, logout } from '../utils/auth';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const navigate = useNavigate();
-  const loggedIn = isAuthenticated();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
+    const checkStorage = () => {
+      const u = localStorage.getItem('user');
+      setUser(u ? JSON.parse(u) : null);
+    };
+    window.addEventListener('storage', checkStorage);
+    return () => window.removeEventListener('storage', checkStorage);
+  }, []);
 
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem('user');
+    window.dispatchEvent(new Event('storage'));
+    setUser(null);
     navigate('/login');
+  };
+
+  const location = useLocation();
+
+  const getLinkClass = (path) => {
+    return location.pathname === path
+      ? 'text-decoration-none fw-bold text-primary'
+      : 'text-decoration-none text-secondary fw-medium';
   };
 
   return (
@@ -17,60 +40,67 @@ const Header = () => {
         <Link to="/" className="navbar-brand fw-bold d-flex align-items-center">
           <img
             src="/bike.svg"
-            alt="FindMyBike Logo"
+            alt="Logo"
             style={{ height: '40px', marginRight: '10px' }}
           />
           FindMyBike
         </Link>
 
-        <div className="ms-auto d-flex align-items-center gap-4">
-          <Link to="/" className="text-decoration-none text-secondary fw-medium">
-            Home
-          </Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
 
-          <Link to="/contact" className="text-decoration-none text-secondary fw-medium">
-            Contact
-          </Link>
-
-          {loggedIn && (
-            <>
-              <Link
-                to="/report"
-                className="text-decoration-none text-secondary fw-medium"
-              >
-                Report Missing
-              </Link>
-
-              <Link
-                to="/dashboard"
-                className="text-decoration-none text-secondary fw-medium"
-              >
-                Dashboard
-              </Link>
-
-              <button
-                onClick={handleLogout}
-                className="btn btn-outline-secondary"
-              >
-                Logout
-              </button>
-            </>
-          )}
-
-          {!loggedIn && (
-            <>
-              <Link
-                to="/login"
-                className="text-decoration-none text-secondary fw-medium"
-              >
-                Login
-              </Link>
-
-              <Link to="/register" className="btn btn-secondary px-4 rounded-3">
-                Register
-              </Link>
-            </>
-          )}
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <div className="navbar-nav ms-auto align-items-center gap-3 gap-lg-4 mt-3 mt-lg-0">
+            <Link to="/" className={getLinkClass('/')}>
+              Home
+            </Link>
+            <Link to="/contact" className={getLinkClass('/contact')}>
+              Contact
+            </Link>
+            {user ? (
+              <>
+                <Link to="/report" className={getLinkClass('/report')}>
+                  Report Missing
+                </Link>
+                <Link to="/dashboard" className={getLinkClass('/dashboard')}>
+                  Dashboard
+                </Link>
+                <Link
+                  to="/profile"
+                  className={`text-decoration-none fw-bold ${location.pathname === '/profile' ? 'text-primary' : 'text-secondary'}`}
+                >
+                  {user.name}
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-outline-danger btn-sm"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className={getLinkClass('/login')}>
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="btn btn-secondary px-4 rounded-3"
+                >
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>
@@ -78,72 +108,3 @@ const Header = () => {
 };
 
 export default Header;
-
-// import React from 'react';
-// import { Link ,useNavigate} from 'react-router-dom';
-// import { isAuthenticated, logout } from '../utils/auth';
-
-// const Header = () => {
-//   const navigate = useNavigate();
-
-//   const handleLogout = () => {
-//     logout();
-//     navigate('/login');
-//   };
-
-//   return (
-//     <div>
-//       <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3.">
-//         <div className="container">
-//           <Link
-//             to="/"
-//             className="navbar-brand fw-bold d-flex align-items-center"
-//           >
-//             <img
-//               src="/bike.svg"
-//               alt="FindMyBike Logo"
-//               style={{ height: '40px', marginRight: '10px' }}
-//             />
-//             FindMyBike
-//           </Link>
-//           <div className="ms-auto d-flex align-items-center gap-4">
-//             <Link
-//               to="/"
-//               className="text-decoration-none text-secondary fw-medium"
-//             >
-//               Home
-//             </Link>
-//             <Link
-//               to="/contact"
-//               className="text-decoration-none text-secondary fw-medium"
-//             >
-//               Contact
-//             </Link>
-//             <Link
-//               to="/report"
-//               className="text-decoration-none text-secondary fw-medium"
-//             >
-//               Report Missing
-//             </Link>
-//             <a
-//               href="#"
-//               className="text-decoration-none text-secondary fw-medium"
-//             >
-//               Dashboard
-//             </a>
-//             <Link
-//               to="/login"
-//               className="text-decoration-none text-secondary fw-medium"
-//             >
-//               Login
-//             </Link>
-//             <Link to="/register" className="btn btn-secondary px-4 rounded-3">
-//               Register
-//             </Link>
-//           </div>
-//         </div>
-//       </nav>
-//     </div>
-//   );
-// };
-// export default Header;

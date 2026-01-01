@@ -1,74 +1,84 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { bikes } from '../data/bikes'; // Mock data
+import BikeCard from '../components/BikeCard';
 
-export default function Dashboard() {
+const Dashboard = () => {
   const [myBikes, setMyBikes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [apiReady, setApiReady] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("access");
-    if (!token) {setLoading(false);
-        return;}
-
-    axios
-      .get("http://127.0.0.1:8000/api/my-bikes/", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setMyBikes(res.data))
-      .catch((err) => {
-        console.error(err.response?.data || err.message);
-        setApiReady(false); // endpoint not created yet
-        setMyBikes([]);
-      })
-      .finally(() => setLoading(false));
+    setTimeout(() => {
+      const storedBikes = localStorage.getItem('myBikes');
+      if (storedBikes) {
+        setMyBikes(JSON.parse(storedBikes));
+      } else {
+        const initialBikes = bikes.slice(0, 2);
+        setMyBikes(initialBikes);
+        localStorage.setItem('myBikes', JSON.stringify(initialBikes));
+      }
+      setLoading(false);
+    }, 300);
+    // ----------------
   }, []);
 
-  if (loading) {
-    return (
-      <div className="container py-5">
-        <h2 className="fw-bold">Dashboard</h2>
-        <p className="text-muted">Loading...</p>
-      </div>
-    );
-  }
+  const handleDelete = (id) => {
+    if (window.confirm('Delete this report?')) {
+      const updatedBikes = myBikes.filter((b) => b.id !== id);
+      setMyBikes(updatedBikes);
+      localStorage.setItem('myBikes', JSON.stringify(updatedBikes));
+    }
+  };
+
+  if (loading) return <div className="text-center py-5">Loading...</div>;
+
+  const hasNoReports = myBikes.length === 0;
 
   return (
     <div className="container py-5">
-      <h2 className="fw-bold mb-3">Dashboard</h2>
-      <p className="text-muted">
-        This page will show the bikes reported by the logged-in user.
-      </p>
-
-      {!apiReady && (
-        <div className="alert alert-warning">
-          The endpoint <b>/api/my-bikes/</b> is not available yet. Add it in the backend to load your bikes.
-        </div>
-      )}
-
-      {myBikes.length === 0 ? (
-        <div className="alert alert-secondary mt-4">
-          You haven’t reported any bikes yet.
+      {hasNoReports ? (
+        /* Empty State */
+        <div className="row justify-content-center">
+          <div className="col-md-6 card p-5 text-center shadow-sm">
+            <h2>No Reports Yet</h2>
+            <p>Report your missing bike to see it here.</p>
+            <Link to="/report" className="btn btn-primary">
+              Report Bike
+            </Link>
+          </div>
         </div>
       ) : (
-        <div className="row mt-4">
-          {myBikes.map((bike) => (
-            <div className="col-md-6 col-lg-4 mb-3" key={bike.id}>
-              <div className="card shadow-sm">
-                <div className="card-body">
-                  <h5 className="card-title">
-                    {bike.brand} {bike.model}
-                  </h5>
-                  <p className="card-text text-muted">
-                    Color: {bike.color} <br />
-                    Status: {bike.status}
-                  </p>
-                </div>
+        /* Populated State */
+        <div>
+          <h2 className="fw-bold text-center mb-4 text-primary">
+            My Dashboard
+          </h2>
+          <div className="row justify-content-center">
+            {myBikes.map((bike) => (
+              <div key={bike.id} className="col-md-4 mb-3">
+                <BikeCard data={bike}>
+                  <div className="d-flex gap-2">
+                    <Link
+                      to={`/bikes/edit/${bike.id}`}
+                      className="btn btn-sm btn-outline-secondary flex-grow-1"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(bike.id)}
+                      className="btn btn-sm btn-outline-danger flex-grow-1"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </BikeCard>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
-}
+};
+
+export default Dashboard;
