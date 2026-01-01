@@ -118,8 +118,8 @@ const Contact = () => {
                   ></textarea>
                 </div>
 
-                <div className="d-grid mb-4">
-                  <button type="submit" className="btn btn-secondary py-2">
+                <div className="d-flex justify-content-center mt-5">
+                  <button type="submit" className="btn btn-primary btn-lg fw-bold rounded-3 px-5">
                     Send Message
                   </button>
                 </div>
@@ -127,19 +127,40 @@ const Contact = () => {
 
               <hr className="my-4 text-muted" />
 
-              <div className="mt-4">
-                <h6 className="fw-bold mb-3">Our Contact Details</h6>
-                <div className="d-flex align-items-center mb-2 small text-muted">
-                  <i className="bi bi-envelope-fill me-2"></i>
-                  info@findmybike.com
-                </div>
-                <div className="d-flex align-items-center mb-2 small text-muted">
-                  <i className="bi bi-telephone-fill me-2"></i>
-                  +31 (0) 20 123-4567
-                </div>
-                <div className="d-flex align-items-center small text-muted">
-                  <i className="bi bi-geo-alt-fill me-2"></i>
-                  Amsterdam, Central, AB 12345
+              <div className="mt-5">
+                <div className="row g-4 text-center">
+                  {/* Email */}
+                  <div className="col-md-4">
+                    <div className="p-3 h-100 rounded-3 bg-light bg-opacity-50">
+                      <div className="mb-2 text-primary">
+                        <i className="bi bi-envelope-fill fs-4"></i>
+                      </div>
+                      <h6 className="fw-bold small mb-1">Email</h6>
+                      <a href="mailto:info@findmybike.com" className="small text-muted mb-0 text-decoration-none stretched-link">info@findmybike.com</a>
+                    </div>
+                  </div>
+
+                  {/* Phone */}
+                  <div className="col-md-4">
+                    <div className="p-3 h-100 rounded-3 bg-light bg-opacity-50">
+                      <div className="mb-2 text-primary">
+                        <i className="bi bi-telephone-fill fs-4"></i>
+                      </div>
+                      <h6 className="fw-bold small mb-1">Phone</h6>
+                      <a href="tel:+310201234567" className="small text-muted mb-0 text-decoration-none stretched-link">+31 (0) 20 123-4567</a>
+                    </div>
+                  </div>
+
+                  {/* Address */}
+                  <div className="col-md-4">
+                    <div className="p-3 h-100 rounded-3 bg-light bg-opacity-50">
+                      <div className="mb-2 text-primary">
+                        <i className="bi bi-geo-alt-fill fs-4"></i>
+                      </div>
+                      <h6 className="fw-bold small mb-1">Address</h6>
+                      <p className="small text-muted mb-0">Amsterdam, Central, AB 12345</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

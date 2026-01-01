@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export default function BikeCard({ data }) {
+export default function BikeCard({ data, children }) {
   return (
     <div className="card shadow-sm border-0 rounded-3 h-100">
       <img
         src={data.image}
         alt={`${data.brand}`}
         className="card-img-top"
-        style={{ height: '200px', objectFit: 'cover' }}
+        style={{ height: '200px', objectFit: 'contain', objectPosition: 'center', backgroundColor: '#f8f9fa', padding: '10px' }}
       />
 
       <div className="card-body d-flex flex-column">
@@ -47,8 +47,14 @@ export default function BikeCard({ data }) {
             className="btn btn-primary btn-sm w-50"
           >
             View Details
-          </Link>{' '}
+          </Link>
         </div>
+        
+        {children && (
+           <div className="mt-3">
+             {children}
+           </div>
+        )}
       </div>
     </div>
   );

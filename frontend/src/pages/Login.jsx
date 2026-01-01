@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { users } from '../data/users';
+import { getApiUrl } from '../apiConfig';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,32 +21,38 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        'http://127.0.0.1:8000/api/auth/login/',
-        {
-          username: formData.email, // username = email
+      // Use generic API URL
+      const res = await fetch(getApiUrl('/api/auth/login/'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: formData.email,
           password: formData.password,
-        }
-      );
+        }),
+      });
 
-      //  SAVE TOKEN
-      localStorage.setItem('access', res.data.access);
-      localStorage.setItem('refresh', res.data.refresh);
+      const data = await res.json();
 
+      if (res.ok) {
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
 
-      navigate('/');
+        const userObj = {
+          name: formData.email.split('@')[0],
+          email: formData.email,
+        };
+        localStorage.setItem('user', JSON.stringify(userObj));
+
+        window.dispatchEvent(new Event('storage'));
+        navigate('/dashboard');
+      } else {
+        alert('Login Failed: ' + (data.detail || 'Invalid credentials'));
+      }
     } catch (err) {
-      console.error(err.response?.data);
-      alert('Login failed');
+      console.error('Login Error:', err);
+      alert('Could not connect to server.');
     }
   };
-
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log('Login credentials:', formData);
-  //   navigate('/');
-  // };
 
   return (
     <div className="container py-5">
@@ -56,10 +63,6 @@ const Login = () => {
               <h2 className="fw-bold text-center mb-4 text-primary">
                 Login to FindMyBike
               </h2>
-              <p className="text-muted text-center mb-5 small">
-                Enter your credentials to access your account.
-              </p>
-
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label fw-bold small">
@@ -92,9 +95,11 @@ const Login = () => {
                     required
                   />
                 </div>
-
-                <div className="d-grid mb-4">
-                  <button type="submit" className="btn btn-secondary py-2">
+                <div className="d-flex justify-content-center mb-4">
+                  <button
+                    type="submit"
+                    className="btn btn-primary py-2 fw-bold rounded-3 px-5"
+                  >
                     Login
                   </button>
                 </div>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
+import { getApiUrl } from '../apiConfig';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -21,30 +20,33 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        'http://127.0.0.1:8000/api/auth/register/',
-        {
+      const res = await fetch(getApiUrl('/api/auth/register/'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           username: formData.username,
           email: formData.email,
           password: formData.password,
-        }
-      );
+        }),
+      });
 
-      //  Save token
-      localStorage.setItem('token', res.data.access);
+      const data = await res.json();
 
-      navigate('/');
+      if (res.ok) {
+        alert('Registration successful! Please login.');
+        navigate('/login');
+      } else {
+        alert('Registration Failed:\n' + JSON.stringify(data));
+      }
     } catch (err) {
-      console.error(err.response?.data);
-      alert('Registration failed');
+      console.error(err);
+      alert(
+        'Connection Error: ' +
+          err.message +
+          '\n\nPlease check if backend is running on port 8001.'
+      );
     }
   };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log('Registration data:', formData);
-  //   navigate('/');
-  // };
 
   return (
     <div className="container py-5">
@@ -105,8 +107,11 @@ const Register = () => {
                   />
                 </div>
 
-                <div className="d-grid mb-4">
-                  <button type="submit" className="btn btn-secondary py-2">
+                <div className="d-flex justify-content-center mb-4">
+                  <button
+                    type="submit"
+                    className="btn btn-primary py-2 fw-bold rounded-3 px-5"
+                  >
                     Register
                   </button>
                 </div>

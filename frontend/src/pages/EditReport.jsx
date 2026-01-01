@@ -1,136 +1,138 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { bikes } from '../data/bikes';
 import { RAW_BRANDS, RAW_COLORS, DUTCH_CITIES } from '../data/options';
 
-export default function ReportMissing() {
+const EditReport = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
+
   const [useBrandSelect, setUseBrandSelect] = useState(false);
   const [useColorSelect, setUseColorSelect] = useState(false);
   const [useCitySelect, setUseCitySelect] = useState(false);
-  const [formData, setFormData] = useState({
-    brand: '',
-    model: '',
-    color: '',
-    frameNumber: '',
-    city: '',
-    street: '',
-    postalCode: '',
-    dateStolen: '',
-    description: '',
-    images: null,
-  });
 
-  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState(null);
+
+  useEffect(() => {
+    const storedBikes = JSON.parse(localStorage.getItem('myBikes') || '[]');
+    let bike = storedBikes.find((b) => b.id.toString() === id);
+    if (!bike) {
+      bike = bikes.find((b) => b.id.toString() === id);
+    }
+
+    if (bike) {
+      setFormData({
+        frameNumber: bike.frame || '',
+        brand: bike.brand || '',
+        model: bike.model || '',
+        color: bike.color || '',
+        dateStolen: bike.date || '',
+        city: bike.location || '',
+        street: bike.street || '',
+        postalCode: bike.post_code || '',
+        description: bike.description || '',
+        images: bike.images || (bike.image ? [bike.image] : []),
+      });
+    } else {
+      setFormData({
+        frameNumber: '',
+        brand: '',
+        model: '',
+        color: '',
+        dateStolen: '',
+        city: '',
+        street: '',
+        postalCode: '',
+        description: '',
+        images: [],
+      });
+    }
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files ? files : value,
-    }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+    if (files) {
+      setFormData((prev) => ({ ...prev, [name]: files }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
-  };
-
-  // Validation Logic
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.brand) newErrors.brand = 'Brand is required';
-    if (!formData.model) newErrors.model = 'Model is required';
-    if (!formData.color) newErrors.color = 'Color is required';
-    if (!formData.frameNumber)
-      newErrors.frameNumber = 'Frame Number is required';
-    if (!formData.city) newErrors.city = 'City is required';
-    if (!formData.street) newErrors.street = 'Street is required';
-    if (!formData.postalCode) newErrors.postalCode = 'Postal Code is required';
-    if (!formData.dateStolen) newErrors.dateStolen = 'Date Stolen is required';
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      console.log('Mock Submitting:', formData);
+    console.log('Saving Updates (Mock):', formData);
 
-      const processImages = async () => {
-        let imageUrls = [];
-        if (formData.images && formData.images.length > 0) {
-          imageUrls = await Promise.all(
-            Array.from(formData.images).map((file) => {
-              return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result); // Base64 string
-                reader.readAsDataURL(file);
-              });
-            })
-          );
-        } else {
-          imageUrls = [
-            'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&q=80&w=600',
-          ];
-        }
+    const processUpdates = async () => {
+      let finalImages = formData.images || [];
 
-        const newBike = {
-          id: Date.now(),
-          brand: formData.brand,
-          model: formData.model,
-          color: formData.color,
-          frame: formData.frameNumber,
-          location: formData.city,
-          street: formData.street,
-          post_code: formData.postalCode,
-          date: formData.dateStolen,
-          description: formData.description,
-          image: imageUrls[0],
-          images: imageUrls,
-          status: 'Stolen',
-        };
-
-        const existingBikes = JSON.parse(
-          localStorage.getItem('myBikes') || '[]'
+      if (formData.newImages && formData.newImages.length > 0) {
+        const newImageUrls = await Promise.all(
+          Array.from(formData.newImages).map((file) => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.readAsDataURL(file);
+            });
+          })
         );
-        const updatedBikes = [newBike, ...existingBikes];
+        finalImages = [...finalImages, ...newImageUrls];
+      }
 
-        localStorage.setItem('myBikes', JSON.stringify(updatedBikes));
+      const storedBikes = JSON.parse(localStorage.getItem('myBikes') || '[]');
+      const updatedBikes = storedBikes.map((b) => {
+        if (b.id.toString() === id) {
+          return {
+            ...b,
+            brand: formData.brand,
+            model: formData.model,
+            color: formData.color,
+            frame: formData.frameNumber,
+            location: formData.city,
+            street: formData.street,
+            post_code: formData.postalCode,
+            date: formData.dateStolen,
+            description: formData.description,
+            images: finalImages,
+            image: finalImages.length > 0 ? finalImages[0] : b.image,
+          };
+        }
+        return b;
+      });
+      localStorage.setItem('myBikes', JSON.stringify(updatedBikes));
 
-        alert('Report Submitted!');
-        navigate('/dashboard');
-      };
+      alert('Report updated successfully!');
+      navigate('/dashboard');
+    };
 
-      processImages();
-    }
+    processUpdates();
+    // -------------------
   };
+
+  if (!formData)
+    return <div className="p-5 text-center">Loading Bike Details...</div>;
 
   return (
     <div className="container py-5">
       <div className="row justify-content-center">
-        <div className="col-md-8">
+        <div className="col-lg-8">
           <div className="card shadow-lg border-0 rounded-4">
             <div className="card-body p-5">
               <h2 className="fw-bold text-center mb-4 text-primary">
-                Report Stolen Bike
+                Edit Bicycle Report
               </h2>
               <p className="text-muted text-center mb-5">
-                Please provide as many details as possible to help us find your
-                bike.
+                Update the details of your missing bike report.
               </p>
 
               <form onSubmit={handleSubmit}>
                 <div className="row g-3 mb-4">
-                  {/* Brand */}
                   <div className="col-md-6">
                     <label className="form-label fw-bold">Brand</label>
-                    <div className="input-group has-validation">
+                    <div className="input-group">
                       {useBrandSelect ? (
                         <select
                           name="brand"
-                          className={`form-select ${
-                            errors.brand ? 'is-invalid' : ''
-                          }`}
+                          className="form-select"
                           value={formData.brand}
                           onChange={handleChange}
                         >
@@ -146,9 +148,7 @@ export default function ReportMissing() {
                         <input
                           type="text"
                           name="brand"
-                          className={`form-control ${
-                            errors.brand ? 'is-invalid' : ''
-                          }`}
+                          className="form-control"
                           placeholder="Enter brand name..."
                           value={formData.brand}
                           onChange={handleChange}
@@ -161,9 +161,6 @@ export default function ReportMissing() {
                       >
                         {useBrandSelect ? 'Type' : 'List'}
                       </button>
-                      {errors.brand && (
-                        <div className="invalid-feedback">{errors.brand}</div>
-                      )}
                     </div>
                   </div>
 
@@ -173,41 +170,33 @@ export default function ReportMissing() {
                     <input
                       type="text"
                       name="model"
-                      className={`form-control ${errors.model ? 'is-invalid' : ''}`}
+                      className="form-control"
                       value={formData.model}
                       onChange={handleChange}
                     />
-                    {errors.model && (
-                      <div className="invalid-feedback">{errors.model}</div>
-                    )}
                   </div>
+                </div>
+
+                <div className="row g-3 mb-4">
                   {/* Frame Number */}
                   <div className="col-md-6">
                     <label className="form-label fw-bold">Frame Number</label>
                     <input
                       type="text"
                       name="frameNumber"
-                      className={`form-control ${errors.frameNumber ? 'is-invalid' : ''}`}
+                      className="form-control"
                       value={formData.frameNumber}
                       onChange={handleChange}
                     />
-                    {errors.frameNumber && (
-                      <div className="invalid-feedback">
-                        {errors.frameNumber}
-                      </div>
-                    )}
                   </div>
 
-                  {/* Color */}
                   <div className="col-md-6">
                     <label className="form-label fw-bold">Color</label>
-                    <div className="input-group has-validation">
+                    <div className="input-group">
                       {useColorSelect ? (
                         <select
                           name="color"
-                          className={`form-select ${
-                            errors.color ? 'is-invalid' : ''
-                          }`}
+                          className="form-select"
                           value={formData.color}
                           onChange={handleChange}
                         >
@@ -223,9 +212,7 @@ export default function ReportMissing() {
                         <input
                           type="text"
                           name="color"
-                          className={`form-control ${
-                            errors.color ? 'is-invalid' : ''
-                          }`}
+                          className="form-control"
                           placeholder="Select Color"
                           value={formData.color}
                           onChange={handleChange}
@@ -238,31 +225,26 @@ export default function ReportMissing() {
                       >
                         {useColorSelect ? 'Type' : 'List'}
                       </button>
-                      {errors.color && (
-                        <div className="invalid-feedback">{errors.color}</div>
-                      )}
                     </div>
                   </div>
                 </div>
 
                 <div className="row g-3 mb-4">
-                  {/* City */}
+                  {/* City (with Toggle) */}
                   <div className="col-md-6">
                     <label className="form-label fw-bold">City</label>
-                    <div className="input-group has-validation">
+                    <div className="input-group">
                       {useCitySelect ? (
                         <select
                           name="city"
-                          className={`form-select ${
-                            errors.city ? 'is-invalid' : ''
-                          }`}
+                          className="form-select"
                           value={formData.city}
                           onChange={handleChange}
                         >
                           <option value="">Select City...</option>
-                          {DUTCH_CITIES.map((city) => (
-                            <option key={city} value={city}>
-                              {city}
+                          {DUTCH_CITIES.map((c) => (
+                            <option key={c} value={c}>
+                              {c}
                             </option>
                           ))}
                           <option value="Other">Other</option>
@@ -271,9 +253,7 @@ export default function ReportMissing() {
                         <input
                           type="text"
                           name="city"
-                          className={`form-control ${
-                            errors.city ? 'is-invalid' : ''
-                          }`}
+                          className="form-control"
                           placeholder="Select City"
                           value={formData.city}
                           onChange={handleChange}
@@ -286,9 +266,6 @@ export default function ReportMissing() {
                       >
                         {useCitySelect ? 'Type' : 'List'}
                       </button>
-                      {errors.city && (
-                        <div className="invalid-feedback">{errors.city}</div>
-                      )}
                     </div>
                   </div>
 
@@ -298,30 +275,24 @@ export default function ReportMissing() {
                     <input
                       type="text"
                       name="street"
-                      className={`form-control ${errors.street ? 'is-invalid' : ''}`}
+                      className="form-control"
                       value={formData.street}
                       onChange={handleChange}
                     />
-                    {errors.street && (
-                      <div className="invalid-feedback">{errors.street}</div>
-                    )}
                   </div>
+                </div>
 
+                <div className="row g-3 mb-4">
                   {/* Postal Code */}
                   <div className="col-md-6">
                     <label className="form-label fw-bold">Postal Code</label>
                     <input
                       type="text"
                       name="postalCode"
-                      className={`form-control ${errors.postalCode ? 'is-invalid' : ''}`}
+                      className="form-control"
                       value={formData.postalCode}
                       onChange={handleChange}
                     />
-                    {errors.postalCode && (
-                      <div className="invalid-feedback">
-                        {errors.postalCode}
-                      </div>
-                    )}
                   </div>
 
                   {/* Date Stolen */}
@@ -330,53 +301,92 @@ export default function ReportMissing() {
                     <input
                       type="date"
                       name="dateStolen"
-                      className={`form-control ${errors.dateStolen ? 'is-invalid' : ''}`}
+                      className="form-control"
                       value={formData.dateStolen}
                       onChange={handleChange}
                     />
-                    {errors.dateStolen && (
-                      <div className="invalid-feedback">
-                        {errors.dateStolen}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  <div className="col-12">
-                    <label className="form-label fw-bold">Description</label>
-                    <textarea
-                      name="description"
-                      className="form-control"
-                      rows="4"
-                      value={formData.description}
-                      onChange={handleChange}
-                    ></textarea>
                   </div>
                 </div>
 
-                {/* Upload Images */}
+                {/* Description */}
+                <div className="mb-4">
+                  <label className="form-label fw-bold">
+                    Description & Details
+                  </label>
+                  <textarea
+                    name="description"
+                    className="form-control"
+                    rows="4"
+                    value={formData.description}
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
+
+                {/* Images */}
                 <div className="mb-4">
                   <label className="form-label fw-bold">Bike Photos</label>
+
                   <input
                     type="file"
-                    name="images"
+                    name="newImages"
                     className="form-control"
                     multiple
-                    accept="image/*"
                     onChange={handleChange}
                   />
-                  <div className="form-text">
+                  <div className="form-text mb-2">
                     You can upload multiple images (Max 5MB each).
                   </div>
+
+                  {/* Show Existing Images */}
+                  {formData.images && formData.images.length > 0 && (
+                    <div className="d-flex gap-2 flex-wrap">
+                      {formData.images.map((img, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            width: '100px',
+                            height: '80px',
+                            border: '1px solid #ddd',
+                            borderRadius: '4px',
+                            overflow: 'hidden',
+                            position: 'relative',
+                          }}
+                        >
+                          {typeof img === 'string' ? (
+                            <img
+                              src={img}
+                              alt="Bike"
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                              }}
+                            />
+                          ) : (
+                            <div className="d-flex align-items-center justify-content-center h-100 bg-light text-muted small">
+                              New File
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Submit Button */}
-                <div className="d-flex justify-content-center mt-5">
+                {/* Buttons */}
+                <div className="d-flex justify-content-center gap-3 mt-5">
                   <button
                     type="submit"
                     className="btn btn-primary btn-lg fw-bold px-5 rounded-3"
                   >
-                    Submit Report
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-lg fw-bold px-5 rounded-3"
+                    onClick={() => navigate('/dashboard')}
+                  >
+                    Cancel
                   </button>
                 </div>
               </form>
@@ -386,4 +396,6 @@ export default function ReportMissing() {
       </div>
     </div>
   );
-}
+};
+
+export default EditReport;
